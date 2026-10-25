@@ -26,10 +26,18 @@ dependencies {
  implementation("net.kyori:adventure-platform-bukkit:4.4.1")
  implementation("org.incendo:cloud-paper:2.0.1")
  compileOnly("com.mojang:brigadier:1.0.18")
+ implementation("com.h2database:h2:2.5.252")
+ testImplementation("org.junit.jupiter:junit-jupiter:6.1.3")
+ testRuntimeOnly("org.junit.platform:junit-platform-launcher:6.1.3")
+}
+
+tasks.test {
+ useJUnitPlatform()
 }
 
 tasks.shadowJar {
  mergeServiceFiles()
  relocate("net.kyori", "com.lotusplugins.sheriff.libs.kyori")
+ relocate("org.h2", "com.lotusplugins.sheriff.libs.h2")
  relocate("org.incendo.cloud", "com.lotusplugins.sheriff.libs.cloud")
 }
