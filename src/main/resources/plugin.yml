@@ -1,0 +1,7 @@
+name: Sheriff
+main: com.lotusplugins.sheriff.SheriffPlugin
+version: '${version}'
+api-version: '26.2'
+authors: [bradenk04]
+softdepend:
+  - Warrant
