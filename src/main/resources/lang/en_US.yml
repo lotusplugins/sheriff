@@ -1,0 +1,3 @@
+vanish:
+  enabled: "<green>Vanish enabled"
+  disabled: "<red>Vanish disabled"
