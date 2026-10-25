@@ -48,3 +48,9 @@ tasks.runServer {
  jvmArgs("-Dcom.mojang.eula.agree=true")
  pluginJars.setFrom(tasks.shadowJar.flatMap { it.archiveFile })
 }
+
+tasks.processResources {
+ val tokens = mapOf("version" to project.version.toString())
+ inputs.properties(tokens)
+ filesMatching("plugin.yml") { expand(tokens) }
+}
