@@ -3,6 +3,7 @@ package com.lotusplugins.sheriff.vanish;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -25,6 +26,15 @@ public final class VanishService {
         return nowVanished;
     }
 
+    public boolean isVanishedName(String name) {
+        var player = plugin.getServer().getPlayerExact(name);
+        return player != null && isVanished(player);
+    }
+
+    public boolean canSeeVanished(CommandSender viewer) {
+        return viewer.hasPermission(SEE_VANISHED);
+    }
+
     public boolean isVanished(Player player) {
         return vanished.contains(player.getUniqueId());
     }
@@ -35,7 +45,7 @@ public final class VanishService {
 
     private void applyToViewers(Player player, boolean hidden) {
         for (var viewer : plugin.getServer().getOnlinePlayers()) {
-            if (viewer.equals(player) || viewer.hasPermission(SEE_VANISHED)) continue;
+            if (viewer.equals(player) || canSeeVanished(viewer)) continue;
             if (hidden) {
                 viewer.hidePlayer(plugin, player);
             } else {
@@ -45,7 +55,7 @@ public final class VanishService {
     }
 
     public void hideFrom(Player viewer) {
-        if (viewer.hasPermission(SEE_VANISHED)) return;
+        if (canSeeVanished(viewer)) return;
         for (var player : plugin.getServer().getOnlinePlayers()) {
             if (vanished.contains(player.getUniqueId())) {
                 viewer.hidePlayer(plugin, player);
