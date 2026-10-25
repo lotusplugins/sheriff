@@ -5,9 +5,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import org.h2.Driver;
 
 public final class AuditLog implements AutoCloseable {
     private static final String INSERT =
@@ -17,6 +17,7 @@ public final class AuditLog implements AutoCloseable {
     private final Executor async;
 
     public AuditLog(String jdbcUrl, Executor async) throws SQLException {
+        Driver.load();
         this.connection = DriverManager.getConnection(jdbcUrl);
         this.async = async;
         try (var statement = connection.createStatement()) {
