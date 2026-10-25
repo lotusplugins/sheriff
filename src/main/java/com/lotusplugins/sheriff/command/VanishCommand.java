@@ -9,6 +9,7 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.logging.Level;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -41,6 +42,11 @@ public final class VanishCommand {
         var nowVanished = vanish.toggle(player);
         var action = nowVanished ? AuditAction.VANISH : AuditAction.UNVANISH;
         adventure.player(player).sendMessage(config.message(nowVanished ? "vanish.enabled" : "vanish.disabled"));
+        adventure
+                .all()
+                .sendMessage(config.message(
+                        nowVanished ? "vanish.fake-leave" : "vanish.fake-join",
+                        Placeholder.unparsed("player", player.getName())));
         auditLog.record(new AuditEntry(Instant.now(), player.getUniqueId(), action, Optional.empty(), ""))
                 .exceptionally(error -> {
                     plugin.getLogger().log(Level.WARNING, "record audit entry", error);

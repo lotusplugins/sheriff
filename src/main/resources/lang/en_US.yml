@@ -1,3 +1,5 @@
 vanish:
   enabled: "<green>Vanish enabled"
   disabled: "<red>Vanish disabled"
+  fake-join: "<yellow><player> joined the game"
+  fake-leave: "<yellow><player> left the game"
