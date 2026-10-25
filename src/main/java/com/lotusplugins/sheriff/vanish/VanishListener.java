@@ -14,11 +14,18 @@ public final class VanishListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        vanish.hideFrom(event.getPlayer());
+        var player = event.getPlayer();
+        vanish.hideFrom(player);
+        if (vanish.isVanished(player)) {
+            vanish.reapply(player);
+            event.setJoinMessage(null);
+        }
     }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
-        vanish.forget(event.getPlayer());
+        if (vanish.isVanished(event.getPlayer())) {
+            event.setQuitMessage(null);
+        }
     }
 }
