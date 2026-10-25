@@ -5,3 +5,8 @@ api-version: '26.2'
 authors: [bradenk04]
 softdepend:
   - Warrant
+permissions:
+  sheriff.vanish:
+    default: op
+  sheriff.vanish.see-vanished:
+    default: op
