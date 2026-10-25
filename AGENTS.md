@@ -1,12 +1,12 @@
 # AGENTS.md
 
-Spigot plugin for Minecraft server punishments. Java, Spigot API only (no Paper APIs, NMS, or reflection).
+Spigot plugin: a staff toolkit (vanish, freeze, invsee, staff mode, inspect, notes, audit). Java, Spigot API only (no Paper APIs). NMS and reflection are allowed only inside per-version modules behind an interface in the main plugin; the plugin must run, with that feature disabled, when no module matches the server version.
 
 ## Code
 
 - Minimum code that solves the task and stays maintainable. Delete before adding.
 - No comments, Javadoc, or TODOs. Intention-revealing names; extract instead of explaining.
-- No speculative abstractions: no single-implementation interfaces, no unrequested config.
+- No speculative abstractions: no single-implementation interfaces, no unrequested config. Exception: the interface in front of a per-version NMS module.
 - No new dependencies without approval.
 - Composition over inheritance, except where Spigot forces it.
 - Immutable by default: `final`, records, unmodifiable collections.
@@ -16,11 +16,16 @@ Spigot plugin for Minecraft server punishments. Java, Spigot API only (no Paper 
 
 ## Domain
 
-- Punishment types are a closed set: enum or sealed type, exhaustive `switch`.
+- Every staff action is a service call that writes its own audit entry. Commands, GUIs and API calls hold no logic, so none can skip the audit.
+- The audit log is append-only. Deletes are soft.
+- Staff actions form a closed set: enum or sealed type, exhaustive `switch`.
+- A staff member can never act on someone of a higher staff level, whatever their permission nodes say.
+- Vanished players leak nothing: every broadcast, list, count, target and sound about them checks vanish state.
+- State that must survive relog, respawn, world change or a crash (vanish, freeze, staff-mode snapshots) lives in storage. Write snapshots before the change they protect.
 - `java.time` (`Instant`, `Duration`) in signatures, never raw millis.
 - Identify players by `UUID`, never name.
-- Compute expiry on read; no sweeps unless measured necessary.
 - Parse and validate input at the command boundary; core logic takes typed values.
+- Other plugins (Warrant, LuckPerms) are soft dependencies. Features fall back or hide when they are absent.
 - User-facing messages come from one message source.
 
 ## Concurrency & Persistence
