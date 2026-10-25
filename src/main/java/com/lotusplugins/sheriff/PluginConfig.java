@@ -34,6 +34,14 @@ public final class PluginConfig {
         return YamlConfiguration.loadConfiguration(file);
     }
 
+    public boolean vanishFakeJoinLeaveMessages() {
+        return plugin.getConfig().getBoolean("vanish.fake-join-leave-messages", true);
+    }
+
+    public boolean vanishSuppressRealJoinLeaveMessages() {
+        return plugin.getConfig().getBoolean("vanish.suppress-real-join-leave-messages", true);
+    }
+
     public String raw(String key) {
         return messages.getString(key, key);
     }
