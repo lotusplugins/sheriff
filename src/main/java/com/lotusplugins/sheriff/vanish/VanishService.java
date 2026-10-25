@@ -21,15 +21,27 @@ public final class VanishService {
         if (!nowVanished) {
             vanished.remove(player.getUniqueId());
         }
+        applyToViewers(player, nowVanished);
+        return nowVanished;
+    }
+
+    public boolean isVanished(Player player) {
+        return vanished.contains(player.getUniqueId());
+    }
+
+    public void reapply(Player player) {
+        applyToViewers(player, true);
+    }
+
+    private void applyToViewers(Player player, boolean hidden) {
         for (var viewer : plugin.getServer().getOnlinePlayers()) {
             if (viewer.equals(player) || viewer.hasPermission(SEE_VANISHED)) continue;
-            if (nowVanished) {
+            if (hidden) {
                 viewer.hidePlayer(plugin, player);
             } else {
                 viewer.showPlayer(plugin, player);
             }
         }
-        return nowVanished;
     }
 
     public void hideFrom(Player viewer) {
@@ -39,9 +51,5 @@ public final class VanishService {
                 viewer.hidePlayer(plugin, player);
             }
         }
-    }
-
-    public void forget(Player player) {
-        vanished.remove(player.getUniqueId());
     }
 }
