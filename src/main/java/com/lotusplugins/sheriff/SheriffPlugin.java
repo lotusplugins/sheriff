@@ -5,6 +5,7 @@ import java.io.File;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.incendo.cloud.CommandManager;
@@ -19,6 +20,7 @@ public class SheriffPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         this.adventure = BukkitAudiences.create(this);
+        var config = new PluginConfig(this, MiniMessage.miniMessage());
         try {
             this.auditLog = new AuditLog(
                     "jdbc:h2:" + new File(getDataFolder(), "sheriff").getAbsolutePath(),
