@@ -42,11 +42,13 @@ public final class VanishCommand {
         var nowVanished = vanish.toggle(player);
         var action = nowVanished ? AuditAction.VANISH : AuditAction.UNVANISH;
         adventure.player(player).sendMessage(config.message(nowVanished ? "vanish.enabled" : "vanish.disabled"));
-        adventure
-                .all()
-                .sendMessage(config.message(
-                        nowVanished ? "vanish.fake-leave" : "vanish.fake-join",
-                        Placeholder.unparsed("player", player.getName())));
+        if (config.vanishFakeJoinLeaveMessages()) {
+            adventure
+                    .all()
+                    .sendMessage(config.message(
+                            nowVanished ? "vanish.fake-leave" : "vanish.fake-join",
+                            Placeholder.unparsed("player", player.getName())));
+        }
         auditLog.record(new AuditEntry(Instant.now(), player.getUniqueId(), action, Optional.empty(), ""))
                 .exceptionally(error -> {
                     plugin.getLogger().log(Level.WARNING, "record audit entry", error);

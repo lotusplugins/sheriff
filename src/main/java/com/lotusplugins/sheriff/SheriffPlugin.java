@@ -34,7 +34,7 @@ public class SheriffPlugin extends JavaPlugin {
         CommandManager<CommandSender> commandManager =
                 LegacyPaperCommandManager.createNative(this, ExecutionCoordinator.asyncCoordinator());
         var vanish = new VanishService(this);
-        getServer().getPluginManager().registerEvents(new VanishListener(vanish), this);
+        getServer().getPluginManager().registerEvents(new VanishListener(vanish, config), this);
         new VanishCommand(this, vanish, auditLog, config, adventure).register(commandManager);
     }
 

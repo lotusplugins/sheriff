@@ -1,1 +1,4 @@
 language: en_US
+vanish:
+  fake-join-leave-messages: true
+  suppress-real-join-leave-messages: true
