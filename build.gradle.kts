@@ -1,6 +1,7 @@
 plugins {
  java
  id("com.gradleup.shadow") version "9.6.1"
+ id("xyz.jpenilla.run-paper") version "3.1.0"
 }
 
 repositories {
@@ -40,4 +41,10 @@ tasks.shadowJar {
  relocate("net.kyori", "com.lotusplugins.sheriff.libs.kyori")
  relocate("org.h2", "com.lotusplugins.sheriff.libs.h2")
  relocate("org.incendo.cloud", "com.lotusplugins.sheriff.libs.cloud")
+}
+
+tasks.runServer {
+ minecraftVersion("26.2")
+ jvmArgs("-Dcom.mojang.eula.agree=true")
+ pluginJars.setFrom(tasks.shadowJar.flatMap { it.archiveFile })
 }
