@@ -1,6 +1,9 @@
 package com.lotusplugins.sheriff;
 
 import com.lotusplugins.sheriff.audit.AuditLog;
+import com.lotusplugins.sheriff.command.VanishCommand;
+import com.lotusplugins.sheriff.vanish.VanishListener;
+import com.lotusplugins.sheriff.vanish.VanishService;
 import java.io.File;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -30,6 +33,9 @@ public class SheriffPlugin extends JavaPlugin {
         }
         CommandManager<CommandSender> commandManager =
                 LegacyPaperCommandManager.createNative(this, ExecutionCoordinator.asyncCoordinator());
+        var vanish = new VanishService(this);
+        getServer().getPluginManager().registerEvents(new VanishListener(vanish), this);
+        new VanishCommand(this, vanish, auditLog, config, adventure).register(commandManager);
     }
 
     @Override
