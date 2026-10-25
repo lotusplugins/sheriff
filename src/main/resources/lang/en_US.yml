@@ -3,3 +3,13 @@ vanish:
   disabled: "<red>Vanish disabled"
   fake-join: "<yellow><player> joined the game"
   fake-leave: "<yellow><player> left the game"
+notes:
+  added: "<green>Added note #<id> to <player>"
+  deleted: "<green>Deleted note #<id>"
+  not-found: "<red>No note with id <id>"
+  invalid-length: "<red>A note must be 1 to 256 characters"
+  unknown-player: "<red><player> has not joined this server"
+  empty: "<yellow>No notes for <player> on page <page>"
+  header: "<gold>Notes for <player> (page <page>)"
+  line: "<gray>#<id> <white><author> <gray><date> <white><body>"
+  failed: "<red>Something went wrong, see the console"

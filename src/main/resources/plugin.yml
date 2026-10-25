@@ -10,3 +10,7 @@ permissions:
     default: op
   sheriff.vanish.see-vanished:
     default: op
+  sheriff.notes:
+    default: op
+  sheriff.notes.delete:
+    default: op
