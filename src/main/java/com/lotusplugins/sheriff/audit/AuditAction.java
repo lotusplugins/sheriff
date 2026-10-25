@@ -5,5 +5,6 @@ public enum AuditAction {
     UNVANISH,
     FREEZE,
     UNFREEZE,
-    INVSEE_EDIT
+    INVSEE_EDIT,
+    NOTE_ADD
 }
