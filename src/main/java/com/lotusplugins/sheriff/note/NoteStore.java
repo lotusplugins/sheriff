@@ -9,6 +9,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -20,6 +21,10 @@ public final class NoteStore implements AutoCloseable {
     private static final String FIND =
             "SELECT id, target, author, body, created_at FROM notes "
                     + "WHERE target = ? AND deleted_at IS NULL ORDER BY created_at DESC, id DESC LIMIT ? OFFSET ?";
+
+    private static final String FIND_LIVE =
+            "SELECT id, target, author, body, created_at FROM notes WHERE id = ? AND deleted_at IS NULL";
+    private static final String MARK_DELETED = "UPDATE notes SET deleted_at = ? WHERE id = ?";
 
     private final Connection connection;
     private final Executor async;
@@ -43,6 +48,29 @@ public final class NoteStore implements AutoCloseable {
 
     public CompletableFuture<List<Note>> find(UUID target, int limit, int offset) {
         return CompletableFuture.supplyAsync(() -> findNow(target, limit, offset), async);
+    }
+
+    public CompletableFuture<Optional<Note>> softDelete(long id, Instant deletedAt) {
+        return CompletableFuture.supplyAsync(() -> softDeleteNow(id, deletedAt), async);
+    }
+
+    private synchronized Optional<Note> softDeleteNow(long id, Instant deletedAt) {
+        try (var find = connection.prepareStatement(FIND_LIVE);
+                var mark = connection.prepareStatement(MARK_DELETED)) {
+            find.setLong(1, id);
+            try (var rows = find.executeQuery()) {
+                if (!rows.next()) {
+                    return Optional.empty();
+                }
+                var note = read(rows);
+                mark.setTimestamp(1, Timestamp.from(deletedAt));
+                mark.setLong(2, id);
+                mark.executeUpdate();
+                return Optional.of(note);
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("delete note", e);
+        }
     }
 
     private synchronized Note insertNow(UUID target, UUID author, String body, Instant createdAt) {

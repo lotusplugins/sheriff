@@ -2,12 +2,14 @@ package com.lotusplugins.sheriff.note;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.lotusplugins.sheriff.audit.AuditLog;
 import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -102,6 +104,58 @@ class NoteServiceTest {
             assertEquals(target, rows.getObject("target", UUID.class));
             assertEquals("id=" + note.id(), rows.getString("detail"));
             assertFalse(rows.next());
+        }
+    }
+
+    @Test
+    void deleteHidesNoteButKeepsRow() throws Exception {
+        var note = service.add(actor, target, "body").join();
+
+        var deleted = service.delete(actor, note.id()).join();
+
+        assertEquals(Optional.of(note), deleted);
+        assertTrue(service.list(target, 1).join().isEmpty());
+        try (var reader = DriverManager.getConnection(url);
+                var rows = reader.createStatement()
+                        .executeQuery("SELECT deleted_at FROM notes WHERE id = " + note.id())) {
+            assertTrue(rows.next());
+            assertNotNull(rows.getObject("deleted_at"));
+        }
+    }
+
+    @Test
+    void deleteMissingOrAlreadyDeletedIsEmptyAndNotAudited() throws Exception {
+        var note = service.add(actor, target, "body").join();
+        service.delete(actor, note.id()).join();
+
+        assertEquals(Optional.empty(), service.delete(actor, note.id()).join());
+        assertEquals(Optional.empty(), service.delete(actor, 999).join());
+        assertEquals(1, auditCount("NOTE_DELETE"));
+    }
+
+    @Test
+    void deleteWritesAuditEntryWithOriginalTarget() throws Exception {
+        var note = service.add(UUID.randomUUID(), target, "body").join();
+
+        service.delete(actor, note.id()).join();
+
+        try (var reader = DriverManager.getConnection(url);
+                var rows = reader.createStatement()
+                        .executeQuery("SELECT actor, target, detail FROM audit_log WHERE action = 'NOTE_DELETE'")) {
+            assertTrue(rows.next());
+            assertEquals(actor, rows.getObject("actor", UUID.class));
+            assertEquals(target, rows.getObject("target", UUID.class));
+            assertEquals("id=" + note.id(), rows.getString("detail"));
+            assertFalse(rows.next());
+        }
+    }
+
+    private int auditCount(String action) throws Exception {
+        try (var reader = DriverManager.getConnection(url);
+                var rows = reader.createStatement()
+                        .executeQuery("SELECT COUNT(*) FROM audit_log WHERE action = '" + action + "'")) {
+            rows.next();
+            return rows.getInt(1);
         }
     }
 
