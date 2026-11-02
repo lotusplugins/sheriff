@@ -14,3 +14,23 @@ permissions:
     default: op
   sheriff.notes.delete:
     default: op
+  sheriff.level.1:
+    default: op
+  sheriff.level.2:
+    default: op
+  sheriff.level.3:
+    default: op
+  sheriff.level.4:
+    default: op
+  sheriff.level.5:
+    default: op
+  sheriff.level.6:
+    default: op
+  sheriff.level.7:
+    default: op
+  sheriff.level.8:
+    default: op
+  sheriff.level.9:
+    default: op
+  sheriff.level.10:
+    default: op
