@@ -5,11 +5,16 @@ import com.lotusplugins.sheriff.command.NoteCommand;
 import com.lotusplugins.sheriff.command.VanishCommand;
 import com.lotusplugins.sheriff.note.NoteService;
 import com.lotusplugins.sheriff.note.NoteStore;
+import com.lotusplugins.sheriff.staff.LuckPermsLevels;
+import com.lotusplugins.sheriff.staff.StaffLevels;
 import com.lotusplugins.sheriff.vanish.VanishListener;
 import com.lotusplugins.sheriff.vanish.VanishService;
 import java.io.File;
 import java.sql.SQLException;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.function.Function;
 import java.util.logging.Level;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -44,6 +49,14 @@ public class SheriffPlugin extends JavaPlugin {
         new VanishCommand(this, vanish, auditLog, config, adventure).register(commandManager);
         var notes = new NoteService(noteStore, auditLog, getLogger());
         new NoteCommand(this, notes, config, adventure).register(commandManager);
+        var staffLevels = new StaffLevels(this, offlineLevel());
+    }
+
+    private Function<UUID, CompletableFuture<Integer>> offlineLevel() {
+        if (!getServer().getPluginManager().isPluginEnabled("LuckPerms")) {
+            return id -> CompletableFuture.completedFuture(0);
+        }
+        return new LuckPermsLevels(getServer())::levelOf;
     }
 
     @Override

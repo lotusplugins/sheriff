@@ -27,6 +27,7 @@ dependencies {
  implementation("net.kyori:adventure-platform-bukkit:4.4.1")
  implementation("org.incendo:cloud-paper:2.0.1")
  compileOnly("com.mojang:brigadier:1.0.18")
+ compileOnly("net.luckperms:api:5.4")
  implementation("com.h2database:h2:2.5.252")
  testImplementation("org.junit.jupiter:junit-jupiter:6.1.3")
  testRuntimeOnly("org.junit.platform:junit-platform-launcher:6.1.3")

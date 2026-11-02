@@ -5,6 +5,7 @@ api-version: '26.2'
 authors: [bradenk04]
 softdepend:
   - Warrant
+  - LuckPerms
 permissions:
   sheriff.vanish:
     default: op
