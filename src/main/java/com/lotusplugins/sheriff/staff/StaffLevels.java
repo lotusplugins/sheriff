@@ -8,7 +8,7 @@ import java.util.function.Predicate;
 import org.bukkit.plugin.Plugin;
 
 public final class StaffLevels {
-    static final int MAX_LEVEL = 10;
+    public static final int MAX_LEVEL = 10;
 
     private final Plugin plugin;
     private final Function<UUID, CompletableFuture<Integer>> offlineLevel;

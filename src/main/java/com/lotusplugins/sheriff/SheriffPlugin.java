@@ -54,7 +54,8 @@ public class SheriffPlugin extends JavaPlugin {
 
     private Function<UUID, CompletableFuture<Integer>> offlineLevel() {
         if (!getServer().getPluginManager().isPluginEnabled("LuckPerms")) {
-            return id -> CompletableFuture.completedFuture(0);
+            return id -> CompletableFuture.completedFuture(
+                    getServer().getOfflinePlayer(id).isOp() ? StaffLevels.MAX_LEVEL : 0);
         }
         return new LuckPermsLevels(getServer())::levelOf;
     }
