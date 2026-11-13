@@ -1,8 +1,12 @@
 package com.lotusplugins.sheriff;
 
 import com.lotusplugins.sheriff.audit.AuditLog;
+import com.lotusplugins.sheriff.command.FreezeCommand;
 import com.lotusplugins.sheriff.command.NoteCommand;
 import com.lotusplugins.sheriff.command.VanishCommand;
+import com.lotusplugins.sheriff.freeze.FreezeListener;
+import com.lotusplugins.sheriff.freeze.FreezeService;
+import com.lotusplugins.sheriff.freeze.FreezeStore;
 import com.lotusplugins.sheriff.note.NoteService;
 import com.lotusplugins.sheriff.note.NoteStore;
 import com.lotusplugins.sheriff.staff.LuckPermsLevels;
@@ -29,6 +33,7 @@ public class SheriffPlugin extends JavaPlugin {
     private BukkitAudiences adventure;
     private AuditLog auditLog;
     private NoteStore noteStore;
+    private FreezeStore freezeStore;
 
     @Override
     public void onEnable() {
@@ -39,6 +44,7 @@ public class SheriffPlugin extends JavaPlugin {
         try {
             this.auditLog = new AuditLog(jdbcUrl, async);
             this.noteStore = new NoteStore(jdbcUrl, async);
+            this.freezeStore = new FreezeStore(jdbcUrl, async);
         } catch (SQLException e) {
             throw new IllegalStateException("open database", e);
         }
@@ -50,6 +56,9 @@ public class SheriffPlugin extends JavaPlugin {
         var notes = new NoteService(noteStore, auditLog, getLogger());
         new NoteCommand(this, notes, config, adventure).register(commandManager);
         var staffLevels = new StaffLevels(this, offlineLevel());
+        var freeze = new FreezeService(freezeStore, auditLog, staffLevels::canAct, getLogger());
+        getServer().getPluginManager().registerEvents(new FreezeListener(freeze, config, getLogger()), this);
+        new FreezeCommand(this, freeze, vanish, config, adventure).register(commandManager);
     }
 
     private Function<UUID, CompletableFuture<Integer>> offlineLevel() {
@@ -73,6 +82,14 @@ public class SheriffPlugin extends JavaPlugin {
                 getLogger().log(Level.WARNING, "close note store", e);
             }
             this.noteStore = null;
+        }
+        if (this.freezeStore != null) {
+            try {
+                this.freezeStore.close();
+            } catch (SQLException e) {
+                getLogger().log(Level.WARNING, "close freeze store", e);
+            }
+            this.freezeStore = null;
         }
         if (this.auditLog != null) {
             try {

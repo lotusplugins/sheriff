@@ -35,3 +35,5 @@ permissions:
     default: op
   sheriff.level.10:
     default: op
+  sheriff.freeze:
+    default: op

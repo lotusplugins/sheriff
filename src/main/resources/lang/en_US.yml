@@ -13,3 +13,13 @@ notes:
   header: "<gold>Notes for <player> (page <page>)"
   line: "<gray>#<id> <white><author> <gray><date> <white><body>"
   failed: "<red>Something went wrong, see the console"
+freeze:
+  frozen: "<green>Froze <player>"
+  unfrozen: "<green>Unfroze <player>"
+  unchanged: "<yellow>No change for <player>"
+  denied: "<red>You can't do that to <player>"
+  unknown-player: "<red>Unknown player <player>"
+  notice-frozen: "<red>You have been frozen by staff"
+  notice-unfrozen: "<green>You have been unfrozen"
+  load-failed: "Could not load your freeze status, try again"
+  failed: "<red>Something went wrong, see the console"
